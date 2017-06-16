@@ -154,7 +154,7 @@ void zHiForest(Int_t radius = 3, char * algo = (char*)"PF"){
      
 
 	  double z= (tpt[tentry]*cos(delR)/pt[jentry]);
-
+	 
 	  
 	  if(printDebug) cout<<"tpt = "<< pt[tentry] << endl;
 	  
@@ -168,6 +168,7 @@ void zHiForest(Int_t radius = 3, char * algo = (char*)"PF"){
 	  if(printDebug) cout<<"teta  = "<< teta[tentry] << endl;
 
 	  hZ->Fill(z);
+	 
 
 	}//! delR condition check
 	
