@@ -2,7 +2,7 @@
 //June 15, 2017
 //Rutgers University
 
-//test macro to read hiForest and plot histogram of z for specific tracks of jets
+//test macro to read hiForest and plot histogram of z. 1/z and log(1/z) for specific tracks of jets
 
 // testing edit on github
 
@@ -68,7 +68,6 @@ double deltaR(double eta1, double phi1, double eta2, double phi2){
   
 }
 
-
 void zHiForest(Int_t radius = 3, char * algo = (char*)"PF"){
  
   bool printDebug = false;
@@ -94,6 +93,8 @@ void zHiForest(Int_t radius = 3, char * algo = (char*)"PF"){
 
   //Definitions
   TH1F * hZ = new TH1F("hZ", "",10,0,1);
+  TH1F * hZinv = new TH1F("hZinv","",10,1,100);
+  TH1F * hlog = new TH1F("hlog","",10,1,5);
    
   Float_t pt[1000];
   Float_t eta[1000];
@@ -154,6 +155,8 @@ void zHiForest(Int_t radius = 3, char * algo = (char*)"PF"){
      
 
 	  double z= (tpt[tentry]*cos(delR)/pt[jentry]);
+	  double zinv=(1/z);
+	  double logzinv=(log(zinv));
 	 
 	  
 	  if(printDebug) cout<<"tpt = "<< pt[tentry] << endl;
@@ -168,6 +171,8 @@ void zHiForest(Int_t radius = 3, char * algo = (char*)"PF"){
 	  if(printDebug) cout<<"teta  = "<< teta[tentry] << endl;
 
 	  hZ->Fill(z);
+	  hZinv->Fill(zinv);
+	  hlog->Fill(logzinv);
 	 
 
 	}//! delR condition check
@@ -183,10 +188,10 @@ void zHiForest(Int_t radius = 3, char * algo = (char*)"PF"){
   
   // plotting for jets
   TCanvas * c1 = new TCanvas("c1", "The z Histogram", 1200, 1200);
-  c1->Divide();
+  c1->Divide(3,1);
   
-  c1->SetLogy();
-  hZ->SetTitle("pp of Track pT/Jet pT");
+  c1->cd(1)->SetLogy();
+  hZ->SetTitle("Histogram of (#frac{p^{trk}_{T}}{ p^{jet}_{T}})");
   // hZ->SetXTitle("z (Track pT/Jet pT)");
   hZ->SetXTitle("#frac{p^{trk}_{T}}{p^{jet}_{T}}");
   // hZ->SetYTitle("Number of Tracks/Number of Bins/Number of Jets");
@@ -195,7 +200,27 @@ void zHiForest(Int_t radius = 3, char * algo = (char*)"PF"){
   hZ->Scale(1./(.1*nJets));
   hZ->Draw();
 
+  c1->cd(2)->SetLogy();
+  hZinv->SetTitle("Histogram of #frac{1}{Z}");
+  // hZ->SetXTitle("z (Track pT/Jet pT)");
+  hZinv->SetXTitle("#frac{p^{jet}_{T}}{p^{trk}_{T}}");
+  // hZ->SetYTitle("Number of Tracks/Number of Bins/Number of Jets");
+  hZinv->SetYTitle("1/N_{jets} #frac{dN}{dp_{T}}");
+  hZinv->GetYaxis()->CenterTitle();
+  hZinv->Scale(1./(.1*nJets));
+  hZinv->Draw();
 
+  c1->cd(3)->SetLogy();
+  hlog->SetTitle("Histogram of log(#frac{1}{Z})");
+  // hZ->SetXTitle("z (Track pT/Jet pT)");
+  hlog->SetXTitle("log(#frac{p^{jet}_{T}}{p^{trk}_{T}})");
+  // hZ->SetYTitle("Number of Tracks/Number of Bins/Number of Jets");
+  hlog->SetYTitle("1/N_{jets} #frac{dN}{dp_{T}}");
+  hlog->GetYaxis()->CenterTitle();
+   hlog->Scale(1./(.1*nJets));
+  hlog->Draw();
+
+  gStyle->SetOptStat(0);
 
   //creates a pdf
   new_File->Write();
